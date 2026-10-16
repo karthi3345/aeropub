@@ -30,10 +30,6 @@ UNFOLD = {
     "SITE_TITLE": "AeroPub Admin",
     "SITE_HEADER": "AeroPub Management",
     "SITE_URL": "/menu/",
-    "SITE_ICON": {
-        "light": lambda request: "/static/favicon.ico",
-        "dark": lambda request: "/static/favicon.ico",
-    },
     "DASHBOARD_CALLBACK": None,
     "STYLES": [
         lambda request: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
@@ -167,16 +163,22 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Cloudinary Storage Configuration for Vercel & Production
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'a9it9xkq'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '163812281322635'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', '2mS6EEUhi6YBlNMYRux4m39kOro'),
+}
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
