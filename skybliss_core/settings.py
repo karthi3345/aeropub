@@ -36,8 +36,6 @@ UNFOLD = {
     },
     "DASHBOARD_CALLBACK": None,
     "STYLES": [
-        lambda request: "https://cdn.tailwindcss.com",
-        lambda request: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Cinzel:wght@600;700&display=swap",
         lambda request: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
     ],
     "COLORS": {
@@ -60,17 +58,45 @@ UNFOLD = {
         "show_all_applications": True,
         "navigation": [
             {
-                "title": "AeroPub Links",
+                "title": "Restaurant Management",
                 "separator": True,
+                "collapsible": False,
                 "items": [
                     {
-                        "title": "Live Customer Menu",
-                        "icon": "restaurant",
+                        "title": "Menu Items (Dishes)",
+                        "icon": "restaurant_menu",
+                        "link": lambda request: "/admin/menu/menuitem/",
+                    },
+                    {
+                        "title": "Categories",
+                        "icon": "category",
+                        "link": lambda request: "/admin/menu/category/",
+                    },
+                    {
+                        "title": "Settings & PDF Upload",
+                        "icon": "tune",
+                        "link": lambda request: "/admin/menu/restaurantsettings/",
+                    },
+                    {
+                        "title": "Table QR Codes",
+                        "icon": "qr_code_2",
+                        "link": lambda request: "/admin/menu/tableqr/",
+                    },
+                ],
+            },
+            {
+                "title": "Quick Actions",
+                "separator": True,
+                "collapsible": False,
+                "items": [
+                    {
+                        "title": "View Customer Menu",
+                        "icon": "open_in_new",
                         "link": "/menu/",
                     },
                     {
-                        "title": "Tabletop QR Standee",
-                        "icon": "qr_code_2",
+                        "title": "Print Table QR Standee",
+                        "icon": "print",
                         "link": "/menu/qr-stand/",
                     },
                 ],
