@@ -98,7 +98,10 @@ class MenuItemAdmin(admin.ModelAdmin):
 
     def image_thumb(self, obj):
         if obj.image:
-            return format_html('<img src="{}" style="height:40px; width:40px; object-fit:cover; border-radius:6px; border:1px solid #dfb256;" />', obj.image.url)
+            try:
+                return format_html('<img src="{}" style="height:40px; width:40px; object-fit:cover; border-radius:6px; border:1px solid #dfb256;" />', obj.image.url)
+            except Exception:
+                pass
         return format_html('<span style="color:#94a3b8; font-size:0.8rem;">No photo</span>')
     image_thumb.short_description = "Photo"
 
