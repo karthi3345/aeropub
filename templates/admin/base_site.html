@@ -1,0 +1,347 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | AeroPub Management{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<!-- Tailwind CSS via CDN with custom color palette & FontAwesome Icons -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    aeroblack: '#070c18',
+                    aerodark: '#0b1329',
+                    aerocard: '#101a38',
+                    aeroborder: '#1e2d5a',
+                    aerogold: '#dfb256',
+                    aerogoldhover: '#c6993b',
+                    aerotext: '#f8fafc',
+                    aeromuted: '#94a3b8'
+                },
+                fontFamily: {
+                    sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    luxury: ['Cinzel', 'serif']
+                }
+            }
+        }
+    }
+</script>
+<style>
+    /* Global Tailwind Dark Luxury Overrides for Django Admin */
+    :root {
+        --primary: #dfb256;
+        --secondary: #0b1329;
+        --accent: #10b981;
+        --body-bg: #070c18;
+        --body-fg: #f8fafc;
+        --border-color: #1e2d5a;
+        --header-bg: #0b1329;
+        --breadcrumbs-bg: #090f20;
+    }
+    body {
+        background-color: #070c18 !important;
+        color: #f1f5f9 !important;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+        letter-spacing: -0.01em;
+    }
+    #header {
+        background: linear-gradient(135deg, #070c18 0%, #0b1329 100%) !important;
+        border-bottom: 1px solid #1e2d5a !important;
+        padding: 14px 28px !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    #branding h1 {
+        font-family: 'Cinzel', serif !important;
+        letter-spacing: 0.15em !important;
+        font-size: 1.35rem !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+    }
+    #branding h1 a:link, #branding h1 a:visited {
+        color: #dfb256 !important;
+        text-shadow: 0 0 15px rgba(223, 178, 86, 0.35);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    #user-tools {
+        font-size: 0.85rem !important;
+        color: #94a3b8 !important;
+    }
+    #user-tools a {
+        color: #dfb256 !important;
+        border-bottom: none !important;
+        font-weight: 600;
+        transition: color 0.15s ease;
+    }
+    #user-tools a:hover {
+        color: #fce7b0 !important;
+    }
+    div.breadcrumbs {
+        background: #090f20 !important;
+        border-bottom: 1px solid #1e2d5a !important;
+        color: #64748b !important;
+        padding: 10px 28px !important;
+        font-size: 0.85rem !important;
+        font-weight: 500;
+    }
+    div.breadcrumbs a {
+        color: #dfb256 !important;
+    }
+    #content-main {
+        max-width: 1440px;
+        margin: 0 auto;
+    }
+    .module {
+        background: #0c1429 !important;
+        border: 1px solid #1e2d5a !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
+        margin-bottom: 24px !important;
+        overflow: hidden !important;
+    }
+    .module caption, .module h2 {
+        background: linear-gradient(90deg, #0f1c3f, #13224d) !important;
+        color: #dfb256 !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        padding: 14px 20px !important;
+        border-bottom: 1px solid #1e2d5a !important;
+    }
+    
+    /* Table Styling */
+    #result_list {
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        width: 100% !important;
+        background: transparent !important;
+    }
+    #result_list th {
+        background: #0f1c3f !important;
+        color: #cbd5e1 !important;
+        font-size: 0.75rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.075em !important;
+        font-weight: 700 !important;
+        padding: 12px 16px !important;
+        border-bottom: 1px solid #1e2d5a !important;
+    }
+    #result_list th a {
+        color: #cbd5e1 !important;
+    }
+    #result_list td, #result_list th.action-checkbox-column {
+        padding: 12px 16px !important;
+        border-bottom: 1px solid rgba(30, 45, 90, 0.6) !important;
+        font-size: 0.875rem !important;
+        vertical-align: middle !important;
+        color: #e2e8f0 !important;
+    }
+    #result_list tbody tr:hover {
+        background-color: rgba(223, 178, 86, 0.06) !important;
+        transition: background 0.15s ease-in-out;
+    }
+    #result_list tr:nth-child(even) {
+        background-color: rgba(12, 20, 41, 0.4) !important;
+    }
+    
+    /* Form Inputs & Controls */
+    input[type=text], input[type=password], input[type=email], input[type=url], 
+    input[type=number], textarea, select {
+        background-color: #070c18 !important;
+        color: #f8fafc !important;
+        border: 1px solid #2d3f75 !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        font-size: 0.875rem !important;
+        outline: none !important;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type=text]:focus, input[type=password]:focus, input[type=email]:focus, 
+    input[type=url]:focus, input[type=number]:focus, textarea:focus, select:focus {
+        border-color: #dfb256 !important;
+        box-shadow: 0 0 0 3px rgba(223, 178, 86, 0.25) !important;
+    }
+    
+    /* Action & Submit Buttons */
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: linear-gradient(135deg, #dfb256 0%, #c6993b 100%) !important;
+        color: #070c18 !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 9px 18px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 3px 10px rgba(223, 178, 86, 0.25) !important;
+        text-transform: none !important;
+    }
+    .button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+        background: linear-gradient(135deg, #f0ca72 0%, #dfb256 100%) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(223, 178, 86, 0.4) !important;
+    }
+    .button.default, input[type=submit].default, .submit-row input.default {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        color: #ffffff !important;
+        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3) !important;
+    }
+    .button.default:hover, input[type=submit].default:hover, .submit-row input.default:hover {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+    }
+    
+    /* Filter Sidebar */
+    #changelist-filter {
+        background: #090f20 !important;
+        border-left: 1px solid #1e2d5a !important;
+        border-radius: 0 12px 12px 0 !important;
+        padding: 16px !important;
+    }
+    #changelist-filter h2 {
+        background: transparent !important;
+        color: #dfb256 !important;
+        font-size: 0.85rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        padding-bottom: 8px !important;
+        border-bottom: 1px solid #1e2d5a !important;
+    }
+    #changelist-filter h3 {
+        color: #cbd5e1 !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        margin-top: 14px !important;
+    }
+    #changelist-filter li a {
+        color: #94a3b8 !important;
+        font-size: 0.825rem !important;
+        transition: color 0.15s;
+    }
+    #changelist-filter li.selected a {
+        color: #dfb256 !important;
+        font-weight: 700 !important;
+    }
+    #changelist-filter li a:hover {
+        color: #f8fafc !important;
+    }
+
+    /* Search Toolbar */
+    #toolbar {
+        background: #0b1329 !important;
+        border: 1px solid #1e2d5a !important;
+        border-radius: 10px !important;
+        padding: 12px 18px !important;
+        margin-bottom: 16px !important;
+    }
+    #changelist-search input[type="text"] {
+        min-width: 280px;
+    }
+    
+    /* Object Tools / Add Buttons */
+    .object-tools a {
+        background: linear-gradient(135deg, #dfb256 0%, #c6993b 100%) !important;
+        color: #070c18 !important;
+        font-weight: 700 !important;
+        border-radius: 8px !important;
+        padding: 8px 16px !important;
+        box-shadow: 0 3px 10px rgba(223, 178, 86, 0.25) !important;
+    }
+    .object-tools a:hover {
+        background: #f0ca72 !important;
+        transform: translateY(-1px);
+    }
+    
+    /* Fieldsets in Change Form */
+    fieldset {
+        background: #0c1429 !important;
+        border: 1px solid #1e2d5a !important;
+        border-radius: 12px !important;
+        margin-bottom: 24px !important;
+        padding: 20px !important;
+    }
+    fieldset h2 {
+        background: transparent !important;
+        color: #dfb256 !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        border-bottom: 1px solid #1e2d5a !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 16px !important;
+    }
+    .form-row {
+        border-bottom: 1px solid rgba(30, 45, 90, 0.4) !important;
+        padding: 14px 0 !important;
+    }
+    .form-row:last-child {
+        border-bottom: none !important;
+    }
+    .form-row label {
+        color: #cbd5e1 !important;
+        font-weight: 600 !important;
+        font-size: 0.875rem !important;
+    }
+    .help {
+        color: #64748b !important;
+        font-size: 0.8rem !important;
+        margin-top: 4px !important;
+    }
+    .submit-row {
+        background: #090f20 !important;
+        border: 1px solid #1e2d5a !important;
+        border-radius: 12px !important;
+        padding: 16px 20px !important;
+    }
+    
+    /* Paginate */
+    .paginator {
+        background: #0b1329 !important;
+        border-top: 1px solid #1e2d5a !important;
+        color: #94a3b8 !important;
+        padding: 12px 18px !important;
+        font-size: 0.85rem !important;
+    }
+    .paginator a:link, .paginator a:visited {
+        background: #101a38 !important;
+        border: 1px solid #1e2d5a !important;
+        color: #dfb256 !important;
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+        margin: 0 2px !important;
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<div id="branding">
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            <i class="fa-solid fa-plane-departure text-aerogold text-xl"></i>
+            <span class="tracking-widest font-extrabold uppercase">AeroPub</span>
+            <span class="text-xs uppercase tracking-wider text-slate-400 font-sans font-medium px-2 py-0.5 rounded bg-slate-800 border border-slate-700 ml-1">Admin Portal</span>
+        </a>
+    </h1>
+</div>
+{% endblock %}
+
+{% block nav-global %}
+<div class="flex items-center gap-3 pr-2">
+    <a href="/menu/" target="_blank" class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-500/10 text-aerogold border border-aerogold/30 hover:bg-aerogold hover:text-aeroblack transition-all">
+        <i class="fa-solid fa-utensils"></i> Live Customer Menu
+    </a>
+    <a href="/menu/qr-stand/" target="_blank" class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500 hover:text-white transition-all">
+        <i class="fa-solid fa-qrcode"></i> QR Standee
+    </a>
+</div>
+{% endblock %}

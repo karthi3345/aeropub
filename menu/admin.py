@@ -77,33 +77,53 @@ class MenuItemAdmin(admin.ModelAdmin):
     )
 
     def price_display(self, obj):
-        return format_html('<strong style="color: #10b981; font-size: 1.05rem;">₹{}</strong>', obj.price)
-    price_display.short_description = "Price (₹)"
+        return format_html(
+            '<div class="flex items-center gap-1 font-mono font-bold text-emerald-400 text-sm">'
+            '<span class="text-xs text-emerald-500/70 font-sans">₹</span><span>{}</span>'
+            '</div>', 
+            obj.price
+        )
+    price_display.short_description = "Price"
     price_display.admin_order_field = 'price'
 
     def diet_badge(self, obj):
         if obj.diet_type == 'veg':
-            return mark_safe('<span style="color:#22c55e; border:1px solid #22c55e; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● VEG</span>')
+            return mark_safe(
+                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-500/40">'
+                '<span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>VEG</span>'
+            )
         elif obj.diet_type == 'egg':
-            return mark_safe('<span style="color:#eab308; border:1px solid #eab308; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● EGG</span>')
+            return mark_safe(
+                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-300 border border-amber-500/40">'
+                '<span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>EGG</span>'
+            )
         elif obj.diet_type == 'beverage':
-            return mark_safe('<span style="color:#38bdf8; border:1px solid #38bdf8; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● DRINK</span>')
-        return mark_safe('<span style="color:#ef4444; border:1px solid #ef4444; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">▲ NON-VEG</span>')
-    diet_badge.short_description = "Type"
-
-    def availability_toggle(self, obj):
-        if obj.is_available:
-            return mark_safe('<span style="color:#10b981; font-weight:600;"><i class="fa fa-check-circle"></i> Available</span>')
-        return mark_safe('<span style="color:#ef4444; font-weight:600;"><i class="fa fa-times-circle"></i> Sold Out</span>')
-    availability_toggle.short_description = "Status"
+            return mark_safe(
+                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-950/60 text-sky-300 border border-sky-500/40">'
+                '<i class="fa-solid fa-cocktail text-[10px]"></i>DRINK</span>'
+            )
+        return mark_safe(
+            '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-950/60 text-rose-400 border border-rose-500/40">'
+            '<span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>NON-VEG</span>'
+        )
+    diet_badge.short_description = "Diet"
 
     def image_thumb(self, obj):
         if obj.image:
             try:
-                return format_html('<img src="{}" style="height:40px; width:40px; object-fit:cover; border-radius:6px; border:1px solid #dfb256;" />', obj.image.url)
+                return format_html(
+                    '<div class="relative group w-11 h-11 rounded-lg overflow-hidden border border-amber-500/30 shadow-md bg-slate-900">'
+                    '<img src="{}" class="w-full h-full object-cover transition-transform group-hover:scale-110" />'
+                    '</div>', 
+                    obj.image.url
+                )
             except Exception:
                 pass
-        return mark_safe('<span style="color:#94a3b8; font-size:0.8rem;">No photo</span>')
+        return mark_safe(
+            '<div class="w-11 h-11 rounded-lg border border-slate-700/60 bg-slate-800/40 flex items-center justify-center text-slate-500 text-xs">'
+            '<i class="fa-solid fa-camera text-sm"></i>'
+            '</div>'
+        )
     image_thumb.short_description = "Photo"
 
 
