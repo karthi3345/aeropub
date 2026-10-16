@@ -8,3 +8,4 @@ whitenoise
 gunicorn
 cloudinary
 django-cloudinary-storage
+django-unfold

@@ -1,10 +1,11 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import Category, MenuItem, TableQR, MenuPage, RestaurantSettings
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 @admin.register(RestaurantSettings)
-class RestaurantSettingsAdmin(admin.ModelAdmin):
+class RestaurantSettingsAdmin(ModelAdmin):
     list_display = ('name', 'pdf_status', 'permanent_qr_preview', 'menu_link', 'pdf_updated_at')
     fields = ('name', 'tagline', 'menu_pdf', 'permanent_qr_preview')
     readonly_fields = ('permanent_qr_preview',)
@@ -38,7 +39,7 @@ class RestaurantSettingsAdmin(admin.ModelAdmin):
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ModelAdmin):
     list_display = ('name', 'display_order', 'item_count', 'icon_display')
     list_editable = ('display_order',)
     prepopulated_fields = {'slug': ('name',)}
@@ -54,7 +55,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(MenuItem)
-class MenuItemAdmin(admin.ModelAdmin):
+class MenuItemAdmin(ModelAdmin):
     list_display = ('code', 'name', 'category', 'price_display', 'diet_badge', 'is_available', 'is_featured', 'image_thumb', 'updated_at')
     list_filter = ('category', 'is_available', 'diet_type', 'is_featured')
     search_fields = ('name', 'code', 'flavor_or_subtext', 'description')
@@ -78,8 +79,8 @@ class MenuItemAdmin(admin.ModelAdmin):
 
     def price_display(self, obj):
         return format_html(
-            '<div class="flex items-center gap-1 font-mono font-bold text-emerald-400 text-sm">'
-            '<span class="text-xs text-emerald-500/70 font-sans">₹</span><span>{}</span>'
+            '<div class="flex items-center gap-1 font-mono font-bold text-emerald-500 text-sm">'
+            '<span class="text-xs text-emerald-600 font-sans">₹</span><span>{}</span>'
             '</div>', 
             obj.price
         )
@@ -89,21 +90,21 @@ class MenuItemAdmin(admin.ModelAdmin):
     def diet_badge(self, obj):
         if obj.diet_type == 'veg':
             return mark_safe(
-                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-500/40">'
-                '<span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>VEG</span>'
+                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-500/40">'
+                '<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>VEG</span>'
             )
         elif obj.diet_type == 'egg':
             return mark_safe(
-                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-300 border border-amber-500/40">'
-                '<span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>EGG</span>'
+                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-500/40">'
+                '<span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>EGG</span>'
             )
         elif obj.diet_type == 'beverage':
             return mark_safe(
-                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-950/60 text-sky-300 border border-sky-500/40">'
+                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-500/40">'
                 '<i class="fa-solid fa-cocktail text-[10px]"></i>DRINK</span>'
             )
         return mark_safe(
-            '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-950/60 text-rose-400 border border-rose-500/40">'
+            '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-500/40">'
             '<span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>NON-VEG</span>'
         )
     diet_badge.short_description = "Diet"
@@ -112,7 +113,7 @@ class MenuItemAdmin(admin.ModelAdmin):
         if obj.image:
             try:
                 return format_html(
-                    '<div class="relative group w-11 h-11 rounded-lg overflow-hidden border border-amber-500/30 shadow-md bg-slate-900">'
+                    '<div class="relative group w-11 h-11 rounded-lg overflow-hidden border border-amber-500/30 shadow-sm bg-slate-900">'
                     '<img src="{}" class="w-full h-full object-cover transition-transform group-hover:scale-110" />'
                     '</div>', 
                     obj.image.url
@@ -120,7 +121,7 @@ class MenuItemAdmin(admin.ModelAdmin):
             except Exception:
                 pass
         return mark_safe(
-            '<div class="w-11 h-11 rounded-lg border border-slate-700/60 bg-slate-800/40 flex items-center justify-center text-slate-500 text-xs">'
+            '<div class="w-11 h-11 rounded-lg border border-slate-300 dark:border-slate-700/60 bg-slate-100 dark:bg-slate-800/40 flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">'
             '<i class="fa-solid fa-camera text-sm"></i>'
             '</div>'
         )
@@ -128,7 +129,7 @@ class MenuItemAdmin(admin.ModelAdmin):
 
 
 @admin.register(TableQR)
-class TableQRAdmin(admin.ModelAdmin):
+class TableQRAdmin(ModelAdmin):
     list_display = ('table_number', 'qr_preview', 'menu_link', 'created_at')
     search_fields = ('table_number',)
 
@@ -148,7 +149,7 @@ class TableQRAdmin(admin.ModelAdmin):
 
 
 @admin.register(MenuPage)
-class MenuPageAdmin(admin.ModelAdmin):
+class MenuPageAdmin(ModelAdmin):
     list_display = ('page_number', 'title', 'page_preview')
     ordering = ('page_number',)
 

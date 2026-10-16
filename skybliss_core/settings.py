@@ -11,6 +11,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['*', '.vercel.app']
 
 INSTALLED_APPS = [
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -22,6 +25,57 @@ INSTALLED_APPS = [
     'cloudinary',
     'menu',
 ]
+
+UNFOLD = {
+    "SITE_TITLE": "AeroPub Admin",
+    "SITE_HEADER": "AeroPub Management",
+    "SITE_URL": "/menu/",
+    "SITE_ICON": {
+        "light": lambda request: "/static/favicon.ico",
+        "dark": lambda request: "/static/favicon.ico",
+    },
+    "DASHBOARD_CALLBACK": None,
+    "STYLES": [
+        lambda request: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
+    ],
+    "COLORS": {
+        "primary": {
+            "50": "254 243 199",
+            "100": "253 230 138",
+            "200": "252 211 77",
+            "300": "245 158 11",
+            "400": "217 119 6",
+            "500": "223 178 86",  # AeroPub Signature Gold
+            "600": "198 153 59",
+            "700": "161 115 37",
+            "800": "120 83 23",
+            "900": "84 57 15",
+            "950": "49 31 6",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": "AeroPub Links",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Live Customer Menu",
+                        "icon": "restaurant",
+                        "link": "/menu/",
+                    },
+                    {
+                        "title": "Tabletop QR Standee",
+                        "icon": "qr_code_2",
+                        "link": "/menu/qr-stand/",
+                    },
+                ],
+            },
+        ],
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
