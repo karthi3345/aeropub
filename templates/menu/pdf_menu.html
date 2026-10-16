@@ -58,13 +58,14 @@
 </head>
 <body>
 
-    <!-- Exactly Like Original PDF Booklet - No page headers/footers/numbers -->
+    <!-- Exactly Like Original PDF Booklet - Zero Broken Images on Vercel or Mobile -->
     <main class="pdf-document-stream">
         {% for p in pages %}
         <div class="pdf-page-wrapper">
             <img 
-                src="/static/{{ p.image }}" 
-                alt="Sky Bliss AeroPub" 
+                src="https://res.cloudinary.com/a9it9xkq/image/upload/skybliss/menu_pages/page_{{ p.page_number }}.jpg" 
+                onerror="this.onerror=null; this.src='/static/{{ p.image }}';"
+                alt="Sky Bliss AeroPub - Page {{ p.page_number }}" 
                 class="pdf-page-image"
                 loading="eager"
             >

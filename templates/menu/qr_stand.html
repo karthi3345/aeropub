@@ -107,7 +107,9 @@
 
         <!-- The ONLY QR Code Displayed (No buttons, no download, pure QR standee) -->
         <a href="/menu/" class="qr-frame" title="Click or Scan to Open Menu">
-            {% if settings.permanent_qr_image %}
+            {% if qr_data_uri %}
+            <img src="{{ qr_data_uri }}" alt="Sky Bliss Menu QR Code" class="qr-image">
+            {% elif settings.permanent_qr_image %}
             <img src="{{ settings.permanent_qr_image.url }}" alt="Sky Bliss Menu QR Code" class="qr-image">
             {% else %}
             <div class="w-[250px] h-[250px] flex items-center justify-center text-gray-400 text-sm">

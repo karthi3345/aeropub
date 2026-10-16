@@ -4,14 +4,38 @@ from .models import Category, MenuItem, TableQR, MenuPage, RestaurantSettings
 from django.db.models import Prefetch
 import os
 
+import base64
+from io import BytesIO
+import qrcode
+
 def qr_landing_view(request):
     """
     First Screen: Displays ONLY the official Permanent Restaurant QR Code standee.
-    Customers scan this QR code on their phones (or click it) to open the menu.
-    Admins can download and print it.
+    Renders an inline Base64 Data URI so the QR code is 100% self-contained and never shows a broken image link.
     """
     settings = RestaurantSettings.objects.first()
-    return render(request, 'menu/qr_stand.html', {'settings': settings})
+    menu_url = request.build_absolute_uri('/menu/')
+    
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=10,
+        border=2,
+    )
+    qr.add_data(menu_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="#dfb256", back_color="#070c18")
+    
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    qr_data_uri = f"data:image/png;base64,{qr_base64}"
+    
+    return render(request, 'menu/qr_stand.html', {
+        'settings': settings,
+        'qr_data_uri': qr_data_uri,
+        'menu_url': menu_url
+    })
 
 def customer_menu_view(request):
     """
