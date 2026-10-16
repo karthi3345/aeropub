@@ -1,40 +1,43 @@
 /* Custom AeroPub Dark/Light Theme Enhancements for Unfold Admin */
 
-/* Fix table row hover and link hover contrast */
-tr:hover td, tr:hover th {
-    color: #f8fafc !important;
-}
-
-/* Ensure links inside hovered table row stay clearly readable with gold highlight */
-tr:hover td a, tr:hover th a {
-    color: #dfb256 !important;
-    text-shadow: 0 0 10px rgba(223, 178, 86, 0.4);
-}
-
-/* In dark mode, ensure table row hover background is a rich dark blue/gold tone, never stark blinding white */
-.dark tr:hover, 
+/* Universal hover fix: prevent blinding white backgrounds on any table rows or list items */
+tr:hover,
+tr:hover > td,
+tr:hover > th,
+.dark tr:hover,
 [data-theme="dark"] tr:hover,
-tr:hover {
-    background-color: rgba(30, 45, 90, 0.55) !important;
+.dark tr:hover > td,
+.dark tr:hover > th,
+div[role="row"]:hover,
+li:hover,
+.dark li:hover {
+    background-color: #1e293b !important; /* Rich deep slate background on hover */
+    color: #ffffff !important;
 }
 
-/* In light mode, ensure subtle warm cream hover */
-html:not(.dark) tr:hover {
-    background-color: rgba(223, 178, 86, 0.12) !important;
-    color: #0f172a !important;
-}
-html:not(.dark) tr:hover td a, 
-html:not(.dark) tr:hover th a {
-    color: #92400e !important;
+/* Ensure text and links remain crisp, bright, and legible on hover */
+tr:hover a,
+tr:hover td a,
+tr:hover th a,
+tr:hover span,
+div[role="row"]:hover a,
+div[role="row"]:hover span,
+li:hover a,
+li:hover span {
+    color: #dfb256 !important; /* Signature AeroPub Gold */
+    font-weight: 600 !important;
 }
 
-/* Fix sidebar item hover */
+/* Ensure icons are vibrant gold on hover */
+tr:hover .material-symbols-outlined,
+div[role="row"]:hover .material-symbols-outlined,
+li:hover .material-symbols-outlined {
+    color: #dfb256 !important;
+}
+
+/* Fix sidebar navigation link hover */
 nav a:hover {
     background-color: rgba(223, 178, 86, 0.15) !important;
     color: #dfb256 !important;
 }
 
-/* Fix action button icons on hover */
-tr:hover a span.material-symbols-outlined {
-    color: #dfb256 !important;
-}
