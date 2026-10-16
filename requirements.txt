@@ -6,3 +6,5 @@ pillow
 pymupdf
 whitenoise
 gunicorn
+cloudinary
+django-cloudinary-storage
