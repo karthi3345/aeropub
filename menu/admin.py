@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Category, MenuItem, TableQR, MenuPage, RestaurantSettings
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 @admin.register(RestaurantSettings)
 class RestaurantSettingsAdmin(admin.ModelAdmin):
@@ -10,8 +11,8 @@ class RestaurantSettingsAdmin(admin.ModelAdmin):
 
     def pdf_status(self, obj):
         if obj.menu_pdf:
-            return format_html('<a href="/menu/pdf/" target="_blank" style="color:#10b981; font-weight:600;"><i class="fa fa-file-pdf"></i> View Active PDF Menu</a>')
-        return format_html('<span style="color:#ef4444;">No PDF Uploaded</span>')
+            return mark_safe('<a href="/menu/pdf/" target="_blank" style="color:#10b981; font-weight:600;"><i class="fa fa-file-pdf"></i> View Active PDF Menu</a>')
+        return mark_safe('<span style="color:#ef4444;">No PDF Uploaded</span>')
     pdf_status.short_description = "Active PDF Menu"
 
     def permanent_qr_preview(self, obj):
@@ -25,7 +26,7 @@ class RestaurantSettingsAdmin(admin.ModelAdmin):
     permanent_qr_preview.short_description = "Permanent Restaurant QR"
 
     def menu_link(self, obj):
-        return format_html('<a href="/menu/" target="_blank" style="background:#070c18; color:#dfb256; padding:4px 10px; border-radius:4px; text-decoration:none; border:1px solid #dfb256;">Open Customer Menu</a>')
+        return mark_safe('<a href="/menu/" target="_blank" style="background:#070c18; color:#dfb256; padding:4px 10px; border-radius:4px; text-decoration:none; border:1px solid #dfb256;">Open Customer Menu</a>')
     menu_link.short_description = "Permanent Menu Link"
 
     def has_add_permission(self, request):
@@ -82,18 +83,18 @@ class MenuItemAdmin(admin.ModelAdmin):
 
     def diet_badge(self, obj):
         if obj.diet_type == 'veg':
-            return format_html('<span style="color:#22c55e; border:1px solid #22c55e; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● VEG</span>')
+            return mark_safe('<span style="color:#22c55e; border:1px solid #22c55e; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● VEG</span>')
         elif obj.diet_type == 'egg':
-            return format_html('<span style="color:#eab308; border:1px solid #eab308; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● EGG</span>')
+            return mark_safe('<span style="color:#eab308; border:1px solid #eab308; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● EGG</span>')
         elif obj.diet_type == 'beverage':
-            return format_html('<span style="color:#38bdf8; border:1px solid #38bdf8; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● DRINK</span>')
-        return format_html('<span style="color:#ef4444; border:1px solid #ef4444; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">▲ NON-VEG</span>')
+            return mark_safe('<span style="color:#38bdf8; border:1px solid #38bdf8; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">● DRINK</span>')
+        return mark_safe('<span style="color:#ef4444; border:1px solid #ef4444; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:700;">▲ NON-VEG</span>')
     diet_badge.short_description = "Type"
 
     def availability_toggle(self, obj):
         if obj.is_available:
-            return format_html('<span style="color:#10b981; font-weight:600;"><i class="fa fa-check-circle"></i> Available</span>')
-        return format_html('<span style="color:#ef4444; font-weight:600;"><i class="fa fa-times-circle"></i> Sold Out</span>')
+            return mark_safe('<span style="color:#10b981; font-weight:600;"><i class="fa fa-check-circle"></i> Available</span>')
+        return mark_safe('<span style="color:#ef4444; font-weight:600;"><i class="fa fa-times-circle"></i> Sold Out</span>')
     availability_toggle.short_description = "Status"
 
     def image_thumb(self, obj):
@@ -102,7 +103,7 @@ class MenuItemAdmin(admin.ModelAdmin):
                 return format_html('<img src="{}" style="height:40px; width:40px; object-fit:cover; border-radius:6px; border:1px solid #dfb256;" />', obj.image.url)
             except Exception:
                 pass
-        return format_html('<span style="color:#94a3b8; font-size:0.8rem;">No photo</span>')
+        return mark_safe('<span style="color:#94a3b8; font-size:0.8rem;">No photo</span>')
     image_thumb.short_description = "Photo"
 
 
