@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sky Bliss — QR Code Scanner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html5-qrcode for instant browser camera scanner -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --gold: #dfb256;
+            --gold-light: #fbe5a2;
+            --gold-gradient: linear-gradient(135deg, #fbe5a2 0%, #dfb256 50%, #9e7424 100%);
+            --navy-deep: #070c18;
+            --navy-card: #0f182b;
+            --navy-card-border: rgba(223, 178, 86, 0.25);
+            --text-gold: #e5c378;
+            --text-light: #f3f4f6;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--navy-deep);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(223, 178, 86, 0.15) 0%, transparent 65%),
+                radial-gradient(circle at 10% 80%, rgba(30, 58, 138, 0.2) 0%, transparent 50%),
+                linear-gradient(180deg, #070c18 0%, #0a1122 100%);
+            color: var(--text-light);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 16px 80px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .logo-symbol {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(223,178,86,0.2) 0%, rgba(7,12,24,0.8) 80%);
+            box-shadow: 0 0 25px rgba(223, 178, 86, 0.35);
+        }
+
+        .logo-symbol i {
+            font-size: 28px;
+            color: var(--gold);
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: var(--text-gold);
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            margin-top: 4px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* Camera Scanner Card */
+        .scanner-card {
+            background: var(--navy-card);
+            border: 1px solid var(--navy-card-border);
+            border-radius: 18px;
+            padding: 20px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        #reader {
+            width: 100%;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid rgba(223, 178, 86, 0.35);
+            background: #020409;
+            min-height: 260px;
+        }
+
+        .scanner-instruction {
+            margin-top: 15px;
+            font-size: 0.88rem;
+            color: var(--text-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .scan-action-btn {
+            background: var(--gold-gradient);
+            color: #070c18;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(223, 178, 86, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        .scan-action-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Success Redirect Modal / Overlay */
+        .scanned-alert {
+            display: none;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            color: #6ee7b7;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Tables section */
+        .tables-section {
+            width: 100%;
+            max-width: 720px;
+        }
+
+        .section-header {
+            font-family: 'Cinzel', serif;
+            font-size: 1.15rem;
+            color: var(--gold-light);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+        }
+
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .table-card {
+            background: var(--navy-card);
+            border: 1px solid var(--navy-card-border);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .table-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .table-card h3 {
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .qr-thumb {
+            width: 130px;
+            height: 130px;
+            border-radius: 10px;
+            border: 1px solid rgba(223, 178, 86, 0.4);
+            margin-bottom: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .simulate-btn {
+            background: rgba(223, 178, 86, 0.12);
+            color: var(--gold-light);
+            border: 1px solid rgba(223, 178, 86, 0.35);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .simulate-btn:hover {
+            background: var(--gold-gradient);
+            color: #070c18;
+            border-color: transparent;
+        }
+
+        /* Bottom Floating Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(7, 12, 24, 0.95);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(223, 178, 86, 0.25);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .bottom-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bottom-nav a.active, .bottom-nav a:hover {
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-symbol">
+            <i class="fa-solid fa-plane-departure"></i>
+        </div>
+        <h1 class="title">Sky Bliss</h1>
+        <p class="subtitle">The AeroPub &bull; Table QR Scanner</p>
+    </div>
+
+    <!-- Live Automatic Camera Scanner -->
+    <div class="scanner-card">
+        <div id="reader"></div>
+        
+        <div id="scanResult" class="scanned-alert">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>QR Code detected! Opening Menu PDF...</span>
+        </div>
+
+        <p class="scanner-instruction">
+            <i class="fa-solid fa-camera"></i>
+            Point camera at Table QR code to open menu automatically
+        </p>
+
+        <button id="toggleCameraBtn" class="scan-action-btn" onclick="startScanner()">
+            <i class="fa-solid fa-video"></i> Open Live Camera
+        </button>
+    </div>
+
+    <!-- Active Table QR Codes Preview & Direct Simulation -->
+    <div class="tables-section">
+        <h2 class="section-header">
+            <i class="fa-solid fa-qrcode"></i> Table QR Codes
+        </h2>
+
+        <div class="tables-grid">
+            {% for table in tables %}
+            <div class="table-card">
+                <h3>{{ table.table_number }}</h3>
+                {% if table.qr_image %}
+                <img src="{{ table.qr_image.url }}" alt="{{ table.table_number }}" class="qr-thumb">
+                {% else %}
+                <div style="width:130px; height:130px; display:flex; align-items:center; justify-content:center; background:#16223b; border-radius:10px; margin-bottom:14px; color:var(--text-muted); font-size:0.75rem;">
+                    Generating...
+                </div>
+                {% endif %}
+                
+                <a href="/menu/?table={{ table.table_number|urlencode }}" class="simulate-btn">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Table Menu
+                </a>
+            </div>
+            {% empty %}
+            <p style="grid-column: 1/-1; text-align:center; color:var(--text-muted); font-size:0.85rem;">
+                No tables registered yet.
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="/" class="active">
+            <i class="fa-solid fa-qrcode"></i>
+            <span>QR Scanner</span>
+        </a>
+        <a href="/menu/">
+            <i class="fa-solid fa-book-open"></i>
+            <span>View PDF Menu</span>
+        </a>
+        <a href="/admin/" target="_blank">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Admin Panel</span>
+        </a>
+    </nav>
+
+    <script>
+        let html5QrCode = null;
+        let isScanning = false;
+
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`Scan success: ${decodedText}`);
+            
+            // Show notification
+            const alertBox = document.getElementById('scanResult');
+            alertBox.style.display = 'block';
+            alertBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> Scanned successfully! Opening menu...`;
+            
+            // Automatically redirect to the exact menu
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
+                        window.location.href = decodedText;
+                    } else {
+                        window.location.href = `/menu/?table=${encodeURIComponent(decodedText)}`;
+                    }
+                }).catch(() => {
+                    window.location.href = decodedText.startsWith('http') ? decodedText : `/menu/?table=${encodeURIComponent(decodedText)}`;
+                });
+            } else {
+                window.location.href = decodedText.startsWith('http') ? decodedText : `/menu/?table=${encodeURIComponent(decodedText)}`;
+            }
+        }
+
+        function onScanFailure(error) {
+            // continuously scans frame
+        }
+
+        function startScanner() {
+            const btn = document.getElementById('toggleCameraBtn');
+            if (isScanning) {
+                html5QrCode.stop().then(() => {
+                    isScanning = false;
+                    btn.innerHTML = `<i class="fa-solid fa-video"></i> Open Live Camera`;
+                });
+                return;
+            }
+
+            html5QrCode = new Html5Qrcode("reader");
+            const config = { fps: 15, qrbox: { width: 250, height: 250 } };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess,
+                onScanFailure
+            ).then(() => {
+                isScanning = true;
+                btn.innerHTML = `<i class="fa-solid fa-stop"></i> Stop Camera`;
+            }).catch(err => {
+                alert("Camera permission denied or camera device not found. You can test by clicking 'Open Table Menu' on any table QR card below!");
+            });
+        }
+    </script>
+</body>
+</html>

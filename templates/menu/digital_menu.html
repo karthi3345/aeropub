@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ settings.name|default:"Sky Bliss — The AeroPub" }} | Live Restaurant Menu</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CDN for modern responsive utilities -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --gold: #dfb256;
+            --gold-light: #fbe5a2;
+            --gold-gradient: linear-gradient(135deg, #fbe5a2 0%, #dfb256 50%, #9e7424 100%);
+            --navy-deep: #070c18;
+            --navy-card: #0f182b;
+            --navy-card-border: rgba(223, 178, 86, 0.25);
+            --text-gold: #e5c378;
+            --text-light: #f3f4f6;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--navy-deep);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(223, 178, 86, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 10% 80%, rgba(30, 58, 138, 0.2) 0%, transparent 50%),
+                linear-gradient(180deg, #070c18 0%, #0a1122 100%);
+            color: var(--text-light);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 85px;
+        }
+
+        .cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Ambient Hero Banner */
+        .hero-banner {
+            background: linear-gradient(180deg, rgba(15, 24, 43, 0.95) 0%, rgba(7, 12, 24, 0.9) 100%);
+            border-bottom: 1px solid var(--navy-card-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo-symbol {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(223,178,86,0.18) 0%, rgba(7,12,24,0.8) 80%);
+            box-shadow: 0 0 20px rgba(223, 178, 86, 0.35);
+        }
+
+        .brand-title {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        /* Menu Card */
+        .menu-card {
+            background: var(--navy-card);
+            border: 1px solid var(--navy-card-border);
+            border-radius: 14px;
+            transition: all 0.25s ease;
+        }
+
+        .menu-card:hover {
+            border-color: rgba(223, 178, 86, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        }
+
+        .menu-card.sold-out {
+            opacity: 0.55;
+            filter: grayscale(0.5);
+        }
+
+        .price-badge {
+            color: var(--gold-light);
+            background: rgba(223, 178, 86, 0.1);
+            border: 1px solid rgba(223, 178, 86, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .price-updated-anim {
+            animation: pricePulse 1.2s ease-in-out;
+        }
+
+        @keyframes pricePulse {
+            0% { transform: scale(1); background: rgba(16, 185, 129, 0.5); color: #fff; }
+            50% { transform: scale(1.15); background: rgba(16, 185, 129, 0.9); color: #fff; }
+            100% { transform: scale(1); }
+        }
+
+        /* Toast notification */
+        #notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(15, 24, 43, 0.98);
+            border: 1px solid var(--gold);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Diet Icons */
+        .badge-veg {
+            color: #22c55e;
+            border: 1px solid #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+        }
+        .badge-non-veg {
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        .badge-egg {
+            color: #eab308;
+            border: 1px solid #eab308;
+            background: rgba(234, 179, 8, 0.1);
+        }
+        .badge-drink {
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Notification Toast for live Admin Updates -->
+    <div id="notification-toast">
+        <i class="fa-solid fa-bell text-[#dfb256]"></i>
+        <span id="toast-message">Admin updated menu items!</span>
+    </div>
+
+    <!-- Header / Brand Section -->
+    <header class="hero-banner text-center py-6 px-4 relative">
+        <div class="logo-symbol mx-auto mb-3">
+            <i class="fa-solid fa-plane-departure text-2xl text-[#dfb256]"></i>
+        </div>
+        <h1 class="cinzel text-3xl font-extrabold tracking-widest brand-title">{{ settings.name|default:"Sky Bliss" }}</h1>
+        <p class="cinzel text-xs tracking-[4px] text-[#e5c378] font-semibold mt-1">THE AEROPUB &bull; ROOFTOP LOUNGE</p>
+        <p class="text-xs text-gray-400 tracking-wider mt-1">{{ settings.tagline|default:"Aishwarya Grand • Pondicherry" }}</p>
+
+        <!-- Table Badge, PDF Download CTA & Live Sync -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mt-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#dfb256]/15 border border-[#dfb256]/40 text-[#fbe5a2] text-xs font-semibold">
+                <i class="fa-solid fa-chair text-[11px]"></i>
+                <span>{{ table }}</span>
+            </div>
+
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+                <div class="live-dot"></div>
+                <span>Live Admin Sync</span>
+            </div>
+
+            <!-- PDF Menu Quick Action Buttons -->
+            <a href="/menu/pdf/" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-950/40 border border-red-500/40 text-red-300 text-xs font-medium hover:bg-red-900/50 transition">
+                <i class="fa-solid fa-file-pdf text-[11px]"></i>
+                <span>Download Official PDF</span>
+            </a>
+
+            <a href="/menu/booklet/" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-950/40 border border-[#dfb256]/40 text-[#fbe5a2] text-xs font-medium hover:bg-[#dfb256]/20 transition">
+                <i class="fa-solid fa-book-open text-[11px]"></i>
+                <span>View Booklet Pages</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Sticky Filter & Search Bar -->
+    <div class="sticky top-0 z-50 bg-[#070c18]/95 backdrop-blur-md border-b border-[#dfb256]/20 p-3">
+        <div class="max-w-4xl mx-auto space-y-2.5">
+            <!-- Search Input -->
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[#e5c378] text-sm"></i>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search dishes, cocktails, beers, starters..." 
+                    class="w-full bg-[#0f182b] border border-[#dfb256]/25 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#dfb256]"
+                    onkeyup="filterItems()"
+                >
+            </div>
+
+            <!-- Dietary & Category Quick Filter Pills -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1 text-xs">
+                <button onclick="filterDiet('all', this)" class="diet-btn flex-shrink-0 px-3 py-1 rounded-full bg-[#dfb256] text-[#070c18] font-bold border border-transparent">
+                    All Items
+                </button>
+                <button onclick="filterDiet('veg', this)" class="diet-btn flex-shrink-0 px-3 py-1 rounded-full bg-[#0f182b] text-emerald-400 border border-emerald-500/30 font-medium">
+                    ● Veg Only
+                </button>
+                <button onclick="filterDiet('non_veg', this)" class="diet-btn flex-shrink-0 px-3 py-1 rounded-full bg-[#0f182b] text-red-400 border border-red-500/30 font-medium">
+                    ▲ Non-Veg
+                </button>
+                {% for cat in categories %}
+                <a href="#cat-{{ cat.slug }}" class="flex-shrink-0 px-3 py-1 rounded-full bg-[#0f182b] text-gray-300 border border-[#dfb256]/20 font-medium hover:text-[#fbe5a2]">
+                    <i class="fa-solid {{ cat.icon }} text-[11px] mr-1 text-[#dfb256]"></i> {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Live Dynamic Menu Container -->
+    <main class="max-w-4xl mx-auto p-4 space-y-8" id="menuContainer">
+        {% for cat in categories %}
+        <section class="category-block scroll-mt-28" id="cat-{{ cat.slug }}" data-category="{{ cat.slug }}">
+            <!-- Category Title Header -->
+            <div class="flex items-center justify-between border-b border-[#dfb256]/20 pb-2 mb-4">
+                <h2 class="cinzel text-lg md:text-xl font-bold tracking-wider text-[#fbe5a2] flex items-center gap-2">
+                    <i class="fa-solid {{ cat.icon }} text-[#dfb256] text-base"></i>
+                    <span>{{ cat.name }}</span>
+                </h2>
+                <span class="text-xs text-gray-400 bg-white/5 px-2.5 py-0.5 rounded-full" id="count-cat-{{ cat.id }}">
+                    {{ cat.items.count }} items
+                </span>
+            </div>
+
+            <!-- Items Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5" id="grid-cat-{{ cat.id }}">
+                {% for item in cat.items.all %}
+                <article 
+                    class="menu-card p-3.5 flex gap-3 relative {% if not item.is_available %}sold-out{% endif %}" 
+                    id="item-card-{{ item.id }}"
+                    data-id="{{ item.id }}"
+                    data-name="{{ item.name|lower }}"
+                    data-code="{{ item.code|default:''|lower }}"
+                    data-diet="{{ item.diet_type }}"
+                    data-flavor="{{ item.flavor_or_subtext|default:''|lower }}"
+                >
+                    <!-- Item Image / Fallback -->
+                    <div class="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-[#16223b] border border-[#dfb256]/20 flex items-center justify-center relative">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-full object-cover" id="img-{{ item.id }}">
+                        {% else %}
+                        <div class="text-center p-2">
+                            <i class="fa-solid {{ cat.icon }} text-[#dfb256]/60 text-2xl"></i>
+                        </div>
+                        {% endif %}
+
+                        <!-- Diet indicator tag on image -->
+                        <span class="absolute top-1 left-1 px-1.5 py-0.2 text-[9px] font-bold rounded 
+                            {% if item.diet_type == 'veg' %}badge-veg
+                            {% elif item.diet_type == 'egg' %}badge-egg
+                            {% elif item.diet_type == 'beverage' %}badge-drink
+                            {% else %}badge-non-veg{% endif %}">
+                            {% if item.diet_type == 'veg' %}VEG
+                            {% elif item.diet_type == 'egg' %}EGG
+                            {% elif item.diet_type == 'beverage' %}DRINK
+                            {% else %}NON-VEG{% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Item Details & Dynamic Live Price -->
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    {% if item.code %}
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#dfb256]/15 text-[#dfb256] border border-[#dfb256]/30 mr-1" id="code-{{ item.id }}">
+                                        {{ item.code }}
+                                    </span>
+                                    {% endif %}
+                                    <h3 class="font-semibold text-white text-sm md:text-base inline" id="name-{{ item.id }}">{{ item.name }}</h3>
+                                </div>
+                                <span class="price-badge font-bold text-sm md:text-base px-2.5 py-0.5 rounded-lg whitespace-nowrap" id="price-{{ item.id }}">
+                                    ₹{{ item.price|floatformat:0 }}
+                                </span>
+                            </div>
+
+                            {% if item.flavor_or_subtext %}
+                            <p class="text-xs text-[#e5c378] italic mt-0.5" id="flavor-{{ item.id }}">{{ item.flavor_or_subtext }}</p>
+                            {% endif %}
+
+                            {% if item.description %}
+                            <p class="text-xs text-gray-400 mt-1 line-clamp-2" id="desc-{{ item.id }}">{{ item.description }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Availability status banner -->
+                        <div class="mt-2" id="status-box-{{ item.id }}">
+                            {% if not item.is_available %}
+                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-400 uppercase tracking-wide">
+                                <i class="fa-solid fa-ban"></i> Sold Out
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+                {% empty %}
+                <p class="text-xs text-gray-500 py-3">No items listed in this category.</p>
+                {% endfor %}
+            </div>
+        </section>
+        {% endfor %}
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 h-14 bg-[#070c18]/95 backdrop-blur-md border-t border-[#dfb256]/20 flex justify-around items-center z-50">
+        <a href="/menu/" class="flex flex-col items-center text-xs text-[#dfb256] gap-1 font-semibold">
+            <i class="fa-solid fa-book-open text-base"></i>
+            <span>Menu</span>
+        </a>
+        <a href="/scan/" class="flex flex-col items-center text-xs text-gray-400 hover:text-[#dfb256] gap-1">
+            <i class="fa-solid fa-qrcode text-base"></i>
+            <span>QR Scanner</span>
+        </a>
+        <a href="/menu/pdf/" target="_blank" class="flex flex-col items-center text-xs text-gray-400 hover:text-[#dfb256] gap-1">
+            <i class="fa-solid fa-file-pdf text-base"></i>
+            <span>PDF Card</span>
+        </a>
+        <a href="/admin/" target="_blank" class="flex flex-col items-center text-xs text-gray-400 hover:text-[#dfb256] gap-1">
+            <i class="fa-solid fa-sliders text-base"></i>
+            <span>Admin</span>
+        </a>
+    </nav>
+
+    <!-- Client Script: Search, Dietary Filters, and Real-Time Sync with PostgreSQL Admin -->
+    <script>
+        let currentDietFilter = 'all';
+
+        function filterDiet(diet, btn) {
+            currentDietFilter = diet;
+            document.querySelectorAll('.diet-btn').forEach(b => {
+                b.className = 'diet-btn flex-shrink-0 px-3 py-1 rounded-full bg-[#0f182b] text-gray-300 border border-[#dfb256]/20 font-medium';
+            });
+            btn.className = 'diet-btn flex-shrink-0 px-3 py-1 rounded-full bg-[#dfb256] text-[#070c18] font-bold border border-transparent';
+            filterItems();
+        }
+
+        function filterItems() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.menu-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                const code = card.getAttribute('data-code') || '';
+                const flavor = card.getAttribute('data-flavor') || '';
+                const diet = card.getAttribute('data-diet') || '';
+
+                const matchesQuery = name.includes(query) || code.includes(query) || flavor.includes(query);
+                const matchesDiet = (currentDietFilter === 'all') || (diet === currentDietFilter);
+
+                if (matchesQuery && matchesDiet) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Live Dynamic Synchronization with PostgreSQL Admin Panel
+        let priceCache = {};
+        document.querySelectorAll('.menu-card').forEach(card => {
+            const id = card.getAttribute('data-id');
+            const pEl = document.getElementById(`price-${id}`);
+            if (pEl) priceCache[id] = pEl.innerText.replace('₹', '').trim();
+        });
+
+        function showToast(msg) {
+            const toast = document.getElementById('notification-toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        }
+
+        async function syncMenuWithServer() {
+            try {
+                const res = await fetch('/api/menu-updates/');
+                if (!res.ok) return;
+                const data = await res.json();
+                
+                const serverItemIds = new Set(data.items.map(i => i.id.toString()));
+
+                // 1. Remove deleted items
+                document.querySelectorAll('.menu-card').forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    if (!serverItemIds.has(id)) {
+                        card.remove();
+                    }
+                });
+
+                // 2. Update existing or dynamically add newly added items
+                data.items.forEach(item => {
+                    let card = document.getElementById(`item-card-${item.id}`);
+                    const newPriceNum = Math.round(parseFloat(item.price)).toString();
+
+                    if (card) {
+                        // Update price with live highlight if cost changed
+                        const priceEl = document.getElementById(`price-${item.id}`);
+                        if (priceEl) {
+                            const oldPrice = priceCache[item.id];
+                            if (oldPrice && oldPrice !== newPriceNum) {
+                                priceEl.innerText = `₹${newPriceNum}`;
+                                priceEl.classList.add('price-updated-anim');
+                                showToast(`${item.name} updated to ₹${newPriceNum}`);
+                                setTimeout(() => priceEl.classList.remove('price-updated-anim'), 1800);
+                                priceCache[item.id] = newPriceNum;
+                            }
+                        }
+
+                        // Update name, flavor, and availability
+                        const nameEl = document.getElementById(`name-${item.id}`);
+                        if (nameEl) nameEl.innerText = item.name;
+
+                        const statusBox = document.getElementById(`status-box-${item.id}`);
+                        if (item.is_available) {
+                            card.classList.remove('sold-out');
+                            if (statusBox) statusBox.innerHTML = '';
+                        } else {
+                            card.classList.add('sold-out');
+                            if (statusBox) statusBox.innerHTML = '<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-400 uppercase tracking-wide"><i class="fa-solid fa-ban"></i> Sold Out</span>';
+                        }
+                    } else {
+                        // Newly added item by admin in PostgreSQL -> dynamically inject into category!
+                        const grid = document.getElementById(`grid-cat-${item.category_id}`);
+                        if (grid) {
+                            const newCard = document.createElement('article');
+                            newCard.className = `menu-card p-3.5 flex gap-3 relative ${item.is_available ? '' : 'sold-out'}`;
+                            newCard.id = `item-card-${item.id}`;
+                            newCard.setAttribute('data-id', item.id);
+                            newCard.setAttribute('data-name', item.name.toLowerCase());
+                            newCard.setAttribute('data-code', item.code.toLowerCase());
+                            newCard.setAttribute('data-diet', item.diet_type);
+                            newCard.setAttribute('data-flavor', item.flavor_or_subtext.toLowerCase());
+
+                            const imgHtml = item.image_url 
+                                ? `<img src="${item.image_url}" alt="${item.name}" class="w-full h-full object-cover">`
+                                : `<div class="text-center p-2"><i class="fa-solid fa-utensils text-[#dfb256]/60 text-2xl"></i></div>`;
+
+                            newCard.innerHTML = `
+                                <div class="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-[#16223b] border border-[#dfb256]/20 flex items-center justify-center relative">
+                                    ${imgHtml}
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-start justify-between gap-2">
+                                            <h3 class="font-semibold text-white text-sm inline" id="name-${item.id}">${item.name}</h3>
+                                            <span class="price-badge font-bold text-sm px-2.5 py-0.5 rounded-lg whitespace-nowrap" id="price-${item.id}">₹${newPriceNum}</span>
+                                        </div>
+                                        <p class="text-xs text-[#e5c378] italic mt-0.5">${item.flavor_or_subtext}</p>
+                                        <p class="text-xs text-gray-400 mt-1 line-clamp-2">${item.description}</p>
+                                    </div>
+                                    <div class="mt-2" id="status-box-${item.id}">
+                                        ${item.is_available ? '' : '<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-400 uppercase tracking-wide"><i class="fa-solid fa-ban"></i> Sold Out</span>'}
+                                    </div>
+                                </div>
+                            `;
+                            grid.prepend(newCard);
+                            priceCache[item.id] = newPriceNum;
+                            showToast(`New dish added: ${item.name}!`);
+                        }
+                    }
+                });
+            } catch (err) {
+                console.warn('Sync check paused', err);
+            }
+        }
+
+        // Live polling every 3 seconds for immediate reflection of admin actions
+        setInterval(syncMenuWithServer, 3000);
+    </script>
+</body>
+</html>

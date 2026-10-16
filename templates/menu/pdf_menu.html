@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ settings.name|default:"Sky Bliss — The AeroPub" }}</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #070c18;
+            color: #f3f4f6;
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Seamless PDF Document Viewer Container */
+        .pdf-document-stream {
+            width: 100%;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            gap: 0px; /* Pure continuous booklet flow */
+        }
+
+        .pdf-page-wrapper {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            line-height: 0;
+            background: #000;
+        }
+
+        .pdf-page-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Exactly Like Original PDF Booklet - No page headers/footers/numbers -->
+    <main class="pdf-document-stream">
+        {% for p in pages %}
+        <div class="pdf-page-wrapper">
+            <img 
+                src="/static/{{ p.image }}" 
+                alt="Sky Bliss AeroPub" 
+                class="pdf-page-image"
+                loading="eager"
+            >
+        </div>
+        {% endfor %}
+    </main>
+
+</body>
+</html>
