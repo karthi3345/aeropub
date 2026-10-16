@@ -22,8 +22,8 @@ A Django & PostgreSQL-based dynamic restaurant menu application designed for roo
 ## Setup & Running
 1. Clone the repository:
    ```bash
-   git clone https://github.com/karthi3345/areropub.git
-   cd areropub
+   git clone https://github.com/karthi3345/aeropub.git
+   cd aeropub
    ```
 
 2. Install dependencies:
