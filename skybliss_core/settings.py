@@ -37,6 +37,7 @@ UNFOLD = {
     "DASHBOARD_CALLBACK": None,
     "STYLES": [
         lambda request: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
+        lambda request: "/static/css/admin_custom.css",
     ],
     "COLORS": {
         "primary": {

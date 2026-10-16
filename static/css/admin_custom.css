@@ -1,0 +1,40 @@
+/* Custom AeroPub Dark/Light Theme Enhancements for Unfold Admin */
+
+/* Fix table row hover and link hover contrast */
+tr:hover td, tr:hover th {
+    color: #f8fafc !important;
+}
+
+/* Ensure links inside hovered table row stay clearly readable with gold highlight */
+tr:hover td a, tr:hover th a {
+    color: #dfb256 !important;
+    text-shadow: 0 0 10px rgba(223, 178, 86, 0.4);
+}
+
+/* In dark mode, ensure table row hover background is a rich dark blue/gold tone, never stark blinding white */
+.dark tr:hover, 
+[data-theme="dark"] tr:hover,
+tr:hover {
+    background-color: rgba(30, 45, 90, 0.55) !important;
+}
+
+/* In light mode, ensure subtle warm cream hover */
+html:not(.dark) tr:hover {
+    background-color: rgba(223, 178, 86, 0.12) !important;
+    color: #0f172a !important;
+}
+html:not(.dark) tr:hover td a, 
+html:not(.dark) tr:hover th a {
+    color: #92400e !important;
+}
+
+/* Fix sidebar item hover */
+nav a:hover {
+    background-color: rgba(223, 178, 86, 0.15) !important;
+    color: #dfb256 !important;
+}
+
+/* Fix action button icons on hover */
+tr:hover a span.material-symbols-outlined {
+    color: #dfb256 !important;
+}
