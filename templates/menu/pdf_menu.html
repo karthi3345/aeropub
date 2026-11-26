@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{{ settings.name|default:"Sky Bliss — The AeroPub" }}</title>
-    <!-- Fonts & Icons -->
+    <title>{{ settings.name|default:"Sky Bliss — The AeroPub" }} | Menu</title>
+    <!-- DNS prefetch for Cloudinary CDN -->
+    <link rel="dns-prefetch" href="//res.cloudinary.com">
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Preload cover page for instant rendering -->
+    <link rel="preload" as="image" href="https://res.cloudinary.com/a9it9xkq/image/upload/f_auto,q_auto:eco,w_1080/v1795663727/skybliss/menu_pages_opt/page_1.webp" fetchpriority="high">
 
     <style>
         * {
@@ -26,23 +31,26 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow-x: hidden;
         }
 
-        /* Seamless PDF Document Viewer Container */
+        /* Seamless Modern PDF Booklet Container */
         .pdf-document-stream {
             width: 100%;
-            max-width: 680px;
+            max-width: 650px;
             display: flex;
             flex-direction: column;
-            gap: 0px; /* Pure continuous booklet flow */
+            gap: 0px;
+            padding-bottom: 70px;
         }
 
         .pdf-page-wrapper {
             width: 100%;
             margin: 0;
             padding: 0;
-            line-height: 0;
-            background: #000;
+            position: relative;
+            background: #0b1329;
+            min-height: 500px; /* Prevents layout jump while loading */
         }
 
         .pdf-page-image {
@@ -53,25 +61,183 @@
             padding: 0;
             user-select: none;
             -webkit-user-drag: none;
+            opacity: 0;
+            transition: opacity 0.25s ease-in;
+        }
+
+        .pdf-page-image.loaded {
+            opacity: 1;
+        }
+
+        /* Top Sticky Floating Header with Quick Jump & Refresh */
+        .floating-top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+            max-width: 650px;
+            background: rgba(7, 12, 24, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(223, 178, 86, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+        }
+
+        .brand-logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #dfb256;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-counter-pill {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(223, 178, 86, 0.15);
+            color: #fbe5a2;
+            border: 1px solid rgba(223, 178, 86, 0.3);
+            border-radius: 9999px;
+            padding: 3px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Quick Category Jump Navigation (Smooth Scroll) */
+        .category-nav-strip {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 8px 14px 10px;
+            background: #080e1d;
+            border-bottom: 1px solid rgba(223, 178, 86, 0.15);
+            width: 100%;
+            max-width: 650px;
+            scrollbar-width: none;
+        }
+        .category-nav-strip::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-jump-btn {
+            background: rgba(15, 24, 43, 0.8);
+            border: 1px solid rgba(223, 178, 86, 0.25);
+            color: #cbd5e1;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 4px 11px;
+            border-radius: 9999px;
+            text-decoration: none;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .cat-jump-btn:active, .cat-jump-btn:hover {
+            background: #dfb256;
+            color: #070c18;
+            border-color: #dfb256;
+        }
+
+        /* Bottom Floating Bar */
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            padding: 10px 16px;
+            background: linear-gradient(180deg, transparent 0%, rgba(7, 12, 24, 0.95) 40%);
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .scroll-to-top-btn {
+            pointer-events: auto;
+            background: #dfb256;
+            color: #070c18;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 7px 18px;
+            border-radius: 9999px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(223, 178, 86, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- Exactly Like Original PDF Booklet - Zero Broken Images on Vercel or Mobile -->
+    <!-- Top Sticky Bar -->
+    <header class="floating-top-bar">
+        <div class="brand-logo-text">
+            <i class="fa-solid fa-plane-departure text-sm"></i>
+            <span>{{ settings.name|default:"Sky Bliss" }}</span>
+        </div>
+        <div class="page-counter-pill">
+            <i class="fa-solid fa-book-open text-[10px]"></i>
+            <span>16 Pages</span>
+        </div>
+    </header>
+
+    <!-- Category Jump Buttons for Instant Navigation -->
+    <nav class="category-nav-strip">
+        <a href="#page-1" class="cat-jump-btn">Cover</a>
+        <a href="#page-2" class="cat-jump-btn">Happy Hours</a>
+        <a href="#page-3" class="cat-jump-btn">Snacks</a>
+        <a href="#page-4" class="cat-jump-btn">Chef Steak</a>
+        <a href="#page-5" class="cat-jump-btn">Combos</a>
+        <a href="#page-6" class="cat-jump-btn">Veg & Egg</a>
+        <a href="#page-7" class="cat-jump-btn">Chicken</a>
+        <a href="#page-9" class="cat-jump-btn">Sea Food</a>
+        <a href="#page-10" class="cat-jump-btn">Fried Rice</a>
+        <a href="#page-11" class="cat-jump-btn">Noodles</a>
+        <a href="#page-12" class="cat-jump-btn">Tandoor</a>
+        <a href="#page-13" class="cat-jump-btn">Breads & BBQ</a>
+        <a href="#page-14" class="cat-jump-btn">Pasta & Soups</a>
+        <a href="#page-15" class="cat-jump-btn">Drinks & Juices</a>
+    </nav>
+
+    <!-- Seamless High-Speed WebP Menu Flow -->
     <main class="pdf-document-stream">
         {% for p in pages %}
-        <div class="pdf-page-wrapper">
+        <div class="pdf-page-wrapper" id="page-{{ p.page_number }}">
             <img 
-                src="https://res.cloudinary.com/a9it9xkq/image/upload/v1795662645/skybliss/menu_pages/page_{{ p.page_number }}.jpg" 
-                onerror="this.onerror=null; this.src='/static/{{ p.image }}';"
-                alt="Sky Bliss AeroPub - Page {{ p.page_number }}" 
-                class="pdf-page-image"
+                src="https://res.cloudinary.com/a9it9xkq/image/upload/f_auto,q_auto:eco,w_1080/v1795663727/skybliss/menu_pages_opt/page_{{ p.page_number }}.webp" 
+                onerror="this.onerror=null; this.src='https://res.cloudinary.com/a9it9xkq/image/upload/v1795662645/skybliss/menu_pages/page_{{ p.page_number }}.jpg';"
+                alt="Sky Bliss Menu - Page {{ p.page_number }}" 
+                class="pdf-page-image {% if forloop.first %}loaded{% endif %}"
+                {% if forloop.first %}
                 loading="eager"
+                fetchpriority="high"
+                {% else %}
+                loading="lazy"
+                decoding="async"
+                {% endif %}
+                onload="this.classList.add('loaded')"
             >
         </div>
         {% endfor %}
     </main>
+
+    <!-- Quick Floating Action -->
+    <div class="bottom-actions">
+        <a href="#page-1" class="scroll-to-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+            <i class="fa-solid fa-arrow-up text-xs"></i> Back to Top
+        </a>
+    </div>
 
 </body>
 </html>
