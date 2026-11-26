@@ -154,7 +154,7 @@ class MenuPageAdmin(ModelAdmin):
     ordering = ('page_number',)
 
     def page_preview(self, obj):
-        cloudinary_url = f"https://res.cloudinary.com/a9it9xkq/image/upload/v1792138628/skybliss/menu_pages/page_{obj.page_number}.jpg"
+        cloudinary_url = f"https://res.cloudinary.com/a9it9xkq/image/upload/v1795662645/skybliss/menu_pages/page_{obj.page_number}.jpg"
         fallback_url = f"/static/{obj.image}"
         return format_html(
             '<a href="{}" target="_blank" class="block w-14 h-18 overflow-hidden rounded-md border border-amber-500/40 shadow-sm hover:scale-105 transition-transform">'
