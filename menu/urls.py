@@ -5,6 +5,7 @@ urlpatterns = [
     # First screen: ONLY the QR code standee
     path('', views.qr_landing_view, name='home_qr'),
     path('qr/', views.qr_landing_view, name='qr_stand'),
+    path('menu/qr-stand/', views.qr_landing_view, name='qr_stand_alt'),
 
     # Once scanned: What is in the PDF menu booklet comes up!
     path('menu/', views.customer_menu_view, name='customer_menu'),
