@@ -41,25 +41,17 @@ def customer_menu_view(request):
     """
     Customer Menu (/menu/):
     Opened after scanning the QR code.
-    Shows the authentic PDF menu booklet with interactive page jump & real-time live database updates.
+    Ultra-optimized: fetches ONLY the 16 MenuPage records with Edge caching for instantaneous delivery.
     """
-    table = request.GET.get('table', 'General Guest')
-    settings = RestaurantSettings.objects.first()
-    pages = MenuPage.objects.all().order_by('page_number')
-
-    categories = Category.objects.prefetch_related(
-        Prefetch('items', queryset=MenuItem.objects.all().order_by('code', 'name'))
-    ).all()
-
-    context = {
-        'settings': settings,
+    pages = list(MenuPage.objects.only('page_number', 'title', 'image').order_by('page_number'))
+    
+    response = render(request, 'menu/pdf_menu.html', {
         'pages': pages,
-        'categories': categories,
-        'table': table,
-        'total_pages': pages.count(),
-        'total_items_count': MenuItem.objects.count(),
-    }
-    return render(request, 'menu/pdf_menu.html', context)
+    })
+    
+    # Cache on Vercel CDN Edge for 5 minutes, serve stale while revalidating
+    response['Cache-Control'] = 'public, s-maxage=300, stale-while-revalidate=86400'
+    return response
 
 def digital_menu_grid_view(request):
     """
